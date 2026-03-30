@@ -5,12 +5,12 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 
 public class UserEntity {
-    private long id;
+    private Long id;
 
-    @NotNull(message="Please add a valid firstName")
+    @NotBlank(message="Please add a valid firstName")
     private String firstName;
 
-    @NotNull(message="Please add a valid lastName")
+    @NotBlank(message="Please add a valid lastName")
     private String lastName;
 
     @Size(min=8, message="Address can't be less than 8 characters")
@@ -20,6 +20,8 @@ public class UserEntity {
     @Pattern(regexp="^[0-9]{10}$", message="Phone number must be 10 digits")
     private String phoneNumber;
     @Email(message="Please enter a valid email address")
+    @Pattern(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
+            message = "Email must contain a valid domain")
     private String emailAddress;
     private boolean active;
     private LocalDateTime createdAt;
