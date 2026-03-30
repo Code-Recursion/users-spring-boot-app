@@ -37,6 +37,15 @@ public class UserController {
         return "Entry Added successfully";
     }
 
+    @GetMapping("/name/{name}")
+    public List<UserEntity> getUserByFName(@PathVariable String name) {
+        return userRepository.findByFirstName(name);
+    }
+    @GetMapping("/active")
+    public List<UserEntity> getActiveUsers() {
+        return userRepository.findActiveUsers();
+    }
+
     @GetMapping("/{id}")
     public UserEntity getJournalById(@PathVariable Long id) {
         return userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));

@@ -1,14 +1,18 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.*;
 
+import javax.annotation.processing.Generated;
 import java.time.LocalDateTime;
 
 @Entity
 public class UserEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank(message="Please add a valid firstName")
@@ -24,8 +28,10 @@ public class UserEntity {
     @Pattern(regexp="^[0-9]{10}$", message="Phone number must be 10 digits")
     private String phoneNumber;
     @Email(message="Please enter a valid email address")
-    @Pattern(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
-            message = "Email must contain a valid domain")
+    @Pattern(
+            regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
+            message = "Email must be valid (example: test@gmail.com)"
+    )
     private String emailAddress;
     private boolean active;
     private LocalDateTime createdAt;
@@ -45,7 +51,7 @@ public class UserEntity {
                 '}';
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
