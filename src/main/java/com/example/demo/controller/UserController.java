@@ -2,7 +2,9 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.UserEntity;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,8 +36,9 @@ public class UserController {
     public UserEntity getJournalById(@PathVariable Long id) {
         UserEntity user = users.get(id);
 
-        if(user == null)
-            throw new RuntimeException("Journal with given id not found. id: " + id);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found for id: " + id);
+        }
         return user;
     }
 
@@ -44,8 +47,9 @@ public class UserController {
 
         UserEntity user = users.get(id);
 
-        if(user == null)
-            throw new RuntimeException("Journal with given id not found. id: " + id);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found for id: " + id);
+        }
         users.remove(id);
         return user;
     }
@@ -53,8 +57,9 @@ public class UserController {
     @PutMapping("/{id}")
     public UserEntity updateJournal(@PathVariable Long id, @RequestBody UserEntity updatedUser) {
 
-        if(!users.containsKey(id))
-            throw new RuntimeException("Journal with given id not found. id: " + id);
+        if (!users.containsKey(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found for id: " + id);
+        }
         updatedUser.setUpdatedAt(LocalDateTime.now());
 
         users.put(id, updatedUser);
