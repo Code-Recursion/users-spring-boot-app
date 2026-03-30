@@ -1,10 +1,14 @@
 package com.example.demo.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
 
+@Entity
 public class UserEntity {
+    @Id
     private Long id;
 
     @NotBlank(message="Please add a valid firstName")

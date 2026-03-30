@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.UserEntity;
+import com.example.demo.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +17,15 @@ import java.util.Map;
 @RequestMapping("/users")
 public class UserController {
 
-    private final Map<Long, UserEntity> users = new HashMap<>();
+    private final UserRepository userRepository;
+
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @GetMapping
     public List<UserEntity> getAll() {
-        return new ArrayList<>(users.values());
+        return userRepository.findAll();
     }
 
     @PostMapping
@@ -28,41 +33,28 @@ public class UserController {
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 
-        users.put(user.getId(), user);
+        userRepository.save(user);
         return "Entry Added successfully";
     }
 
     @GetMapping("/{id}")
     public UserEntity getJournalById(@PathVariable Long id) {
-        UserEntity user = users.get(id);
-
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found for id: " + id);
-        }
-        return user;
+        return userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping("/{id}")
-    public UserEntity deleteJournalById(@PathVariable Long id) {
-
-        UserEntity user = users.get(id);
-
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found for id: " + id);
-        }
-        users.remove(id);
-        return user;
+    public void deleteJournalById(@PathVariable Long id) {
+        userRepository.deleteById(id);
     }
 
     @PutMapping("/{id}")
-    public UserEntity updateJournal(@PathVariable Long id, @RequestBody UserEntity updatedUser) {
+    public UserEntity updateJournal(@PathVariable Long id, @RequestBody UserEntity user) {
 
-        if (!users.containsKey(id)) {
+        if (!userRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found for id: " + id);
         }
-        updatedUser.setUpdatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+        return userRepository.save(user);
 
-        users.put(id, updatedUser);
-        return updatedUser;
     }
 }
