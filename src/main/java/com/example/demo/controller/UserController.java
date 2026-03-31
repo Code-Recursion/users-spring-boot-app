@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.UserEntity;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -17,53 +18,44 @@ import java.util.Map;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping
     public List<UserEntity> getAll() {
-        return userRepository.findAll();
+        return userService.getAllUsers();
     }
 
     @PostMapping
-    public String createJournal(@RequestBody @Valid UserEntity user) {
-        user.setCreatedAt(LocalDateTime.now());
-        user.setUpdatedAt(LocalDateTime.now());
-
-        userRepository.save(user);
-        return "Entry Added successfully";
+    public UserEntity createJournal(@RequestBody @Valid UserEntity user) {
+        return userService.createUser(user);
     }
 
     @GetMapping("/name/{name}")
     public List<UserEntity> getUserByFName(@PathVariable String name) {
-        return userRepository.findByFirstName(name);
+        return userService.getUsersbyFirstName(name);
     }
+
     @GetMapping("/active")
     public List<UserEntity> getActiveUsers() {
-        return userRepository.findActiveUsers();
+        return userService.getActiveUsers();
     }
 
     @GetMapping("/{id}")
     public UserEntity getJournalById(@PathVariable Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return userService.getUserById(id);
     }
 
     @DeleteMapping("/{id}")
     public void deleteJournalById(@PathVariable Long id) {
-        userRepository.deleteById(id);
+        userService.deleteUser(id);
     }
 
     @PutMapping("/{id}")
     public UserEntity updateJournal(@PathVariable Long id, @RequestBody UserEntity user) {
-
-        if (!userRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found for id: " + id);
-        }
-        user.setUpdatedAt(LocalDateTime.now());
-        return userRepository.save(user);
-
+       return userService.updateUser(id, user);
     }
 }
